@@ -6,552 +6,426 @@ ee11ffa0334a6d0ab80d832ac6351704
 
 eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlZTExZmZhMDMzNGE2ZDBhYjgwZDgzMmFjNjM1MTcwNCIsIm5iZiI6MTczNTYzMTAzMi41MjYsInN1YiI6IjY3NzNhMGI4ZDhkYzIyZTZjNjkyOWEyMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.TLWRQSW3bmoaVtAyS77SoCAXoVEdyqxsfHI66lgQl-k
 
-
-
-private apiUrl = 'https://api.themoviedb.org/3';
-  private apiKey = 'ee11ffa0334a6d0ab80d832ac6351704'; // your API key
-  private language = 'en-US';
-
-
-  constructor(private http: HttpClient) { }
-
-  getNowPlaying(mediaType: string, page: number): Observable<any> {
-    const params = this.buildParams({ page: page.toString() });
-    return this.http.get(`${this.apiUrl}/${mediaType}/now_playing`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  getCategory(category: string, page: number, mediaType: string): Observable<any> {
-    const params = this.buildParams({ page: page.toString() });
-    return this.http.get(`${this.apiUrl}/${mediaType}/${category}`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  getMovie(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/movie/${id}`, { params: this.buildParams({}) })
-      .pipe(catchError(this.handleError));
-  }
-
-  getExternalId(id: number, mediaType: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${mediaType}/${id}/external_ids`, { params: this.buildParams({}) })
-      .pipe(catchError(this.handleError));
-  }
-
-  getRecommended(id: number, page: number, mediaType: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${mediaType}/${id}/recommendations`, { params: this.buildParams({}) })
-  }
-
-  getBackdrops(id: number, mediaType: string): Observable<any> {
-    const url = `${this.apiUrl}/${mediaType}/${id}/images?api_key=${this.apiKey}`;
-    return this.http.get<any>(url);
-  }
-
-  getYouTubeVideo(id: number, mediaType: string): Observable<any> {
-    const params = this.buildParams({});
-    return this.http.get(`${this.apiUrl}/${mediaType}/${id}/videos`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  getTrending(media: string, page: number): Observable<any> {
-    const params = this.buildParams({ page: page.toString() });
-    return this.http.get(`${this.apiUrl}/trending/${media}/week`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  getTvDiscover(page: number): Observable<any> {
-    const params = this.buildParams({ page: page.toString() });
-    return this.http.get(`${this.apiUrl}/discover/tv`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  getPersonExternalId(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/person/${id}/external_ids`, { params: this.buildParams({}) })
-      .pipe(catchError(this.handleError));
-  }
-
-  getTvShow(id: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/tv/${id}`, { params: this.buildParams({}) })
-      .pipe(catchError(this.handleError));
-  }
-
-  getTvShowEpisodes(id: number, season: number): Observable<any> {
-    const params = this.buildParams({});
-    return this.http.get(`${this.apiUrl}/tv/${id}/season/${season}`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  getMediaByGenre(media: string, genreId: number, page: number): Observable<any> {
-    const params = this.buildParams({ page: page.toString(), with_genres: genreId.toString() });
-    return this.http.get(`${this.apiUrl}/discover/${media}`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  getGenreList(media: string): Observable<any> {
-    const params = this.buildParams({});
-    return this.http.get(`${this.apiUrl}/genre/${media}/list`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  getByGenre(id: number, type: string, page: number): Observable<any> {
-    const params = this.buildParams({ page: page.toString() });
-    return this.http.get(`${this.apiUrl}/genre/${id}/${type}`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  getCredits(id: number, type: string): Observable<any> {
-    const params = this.buildParams({});
-    return this.http.get(`${this.apiUrl}/${type}/${id}/credits`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  getPerson(id: number): Observable<any> {
-    const params = this.buildParams({});
-    return this.http.get(`${this.apiUrl}/person/${id}`, { params })
-      .pipe(catchError(this.handleError));
-  }
-  getPersonImages(id: number): Observable<any> {
-    const params = this.buildParams({});
-    return this.http.get(`${this.apiUrl}/person/${id}/images`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  getPersonCredit(id: number): Observable<any> {
-    const params = this.buildParams({});
-    return this.http.get(`${this.apiUrl}/person/${id}/movie_credits`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  search(query: string, page: number): Observable<any> {
-    const params = this.buildParams({ query, page: page.toString() });
-    return this.http.get(`${this.apiUrl}/search/multi`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  private buildParams(params: any): HttpParams {
-    let httpParams = new HttpParams().set('api_key', this.apiKey).set('language', this.language);
-    for (const key in params) {
-      if (params.hasOwnProperty(key)) {
-        httpParams = httpParams.set(key, params[key]);
-      }
-    }
-    return httpParams;
-  }
-
-  private handleError(error: any): Observable<never> {
-    console.error('An error occurred', error);
-    return throwError(() => new Error('Something went wrong'));
-  }
-
-
-
-
-NOW PLAYING:- ( https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1 )
 {
-  "dates": {
-    "maximum": "2025-01-08",
-    "minimum": "2024-11-27"
-  },
   "page": 1,
   "results": [
     {
       "adult": false,
-      "backdrop_path": "/6qld2YxAO9gdEblo0rsEb8BcYKO.jpg",
+      "backdrop_path": "/2meX1nMdScFOoV4370rqHWKmXhY.jpg",
       "genre_ids": [
-        10749,
+        10759,
+        9648,
         18
       ],
-      "id": 1156593,
-      "original_language": "es",
-      "original_title": "Culpa tuya",
-      "overview": "The love between Noah and Nick seems unwavering despite their parents' attempts to separate them. But his job and her entry into college open up their lives to new relationships that will shake the foundations of both their relationship and the Leister family itself.",
-      "popularity": 5944.118,
-      "poster_path": "/1sQA7lfcF9yUyoLYC0e6Zo3jmxE.jpg",
-      "release_date": "2024-12-26",
-      "title": "Your Fault",
-      "video": false,
-      "vote_average": 7.3,
-      "vote_count": 469
+      "id": 93405,
+      "origin_country": [
+        "KR"
+      ],
+      "original_language": "ko",
+      "original_name": "오징어 게임",
+      "overview": "Hundreds of cash-strapped players accept a strange invitation to compete in children's games. Inside, a tempting prize awaits — with deadly high stakes.",
+      "popularity": 8611.964,
+      "poster_path": "/dDlEmu3EZ0Pgg93K2SVNLCjCSvE.jpg",
+      "first_air_date": "2021-09-17",
+      "name": "Squid Game",
+      "vote_average": 7.838,
+      "vote_count": 14506
     },
     {
       "adult": false,
-      "backdrop_path": "/euYIwmwkmz95mnXvufEmbL6ovhZ.jpg",
+      "backdrop_path": "/mu3lEhGovyhKHPJzb7HNYtZUCDT.jpg",
       "genre_ids": [
-        28,
-        12,
+        10766
+      ],
+      "id": 206559,
+      "origin_country": [
+        "ZA"
+      ],
+      "original_language": "af",
+      "original_name": "Binnelanders",
+      "overview": "A South African Afrikaans soap opera. It is set in and around the fictional private hospital, Binneland Kliniek, in Pretoria, and the storyline follows the trials, trauma and tribulations of the staff and patients of the hospital.",
+      "popularity": 4599.626,
+      "poster_path": "/3bzECfllho8PphdYujLUIuhncJD.jpg",
+      "first_air_date": "2005-10-13",
+      "name": "Binnelanders",
+      "vote_average": 5.563,
+      "vote_count": 79
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/vgeDRVpSUa4Hvovg4C6dgm4dfUW.jpg",
+      "genre_ids": [
+        10766,
         18
       ],
-      "id": 558449,
-      "original_language": "en",
-      "original_title": "Gladiator II",
-      "overview": "Years after witnessing the death of the revered hero Maximus at the hands of his uncle, Lucius is forced to enter the Colosseum after his home is conquered by the tyrannical Emperors who now lead Rome with an iron fist. With rage in his heart and the future of the Empire at stake, Lucius must look to his past to find strength and honor to return the glory of Rome to its people.",
-      "popularity": 5324.153,
-      "poster_path": "/2cxhvwyEwRlysAmRH4iodkvo0z5.jpg",
-      "release_date": "2024-11-05",
-      "title": "Gladiator II",
-      "video": false,
-      "vote_average": 6.772,
-      "vote_count": 1756
-    },
-    {
-      "adult": false,
-      "backdrop_path": "/cjEcqdRdPQJhYre3HUAc5538Gk8.jpg",
-      "genre_ids": [
-        28,
-        14,
-        35
+      "id": 112470,
+      "origin_country": [
+        "FR"
       ],
-      "id": 845781,
-      "original_language": "en",
-      "original_title": "Red One",
-      "overview": "After Santa Claus (codename: Red One) is kidnapped, the North Pole's Head of Security must team up with the world's most infamous tracker in a globe-trotting, action-packed mission to save Christmas.",
-      "popularity": 3383.271,
-      "poster_path": "/cdqLnri3NEGcmfnqwk2TSIYtddg.jpg",
-      "release_date": "2024-10-31",
-      "title": "Red One",
-      "video": false,
-      "vote_average": 7.036,
-      "vote_count": 1687
+      "original_language": "fr",
+      "original_name": "Ici tout commence",
+      "overview": "This television drama series is centered around the prestigious culinary school of renowned chef Auguste Armand. The show follows the lives of students and staff as they navigate the challenges and pressures of the culinary world—delving into their personal and professional lives, revealing secrets, rivalries, and complex relationships.",
+      "popularity": 3513.033,
+      "poster_path": "/v7nXPo2zdaIOfeIaERiOuTEt89N.jpg",
+      "first_air_date": "2020-11-02",
+      "name": "Ici tout commence",
+      "vote_average": 6.8,
+      "vote_count": 86
     },
     {
       "adult": false,
-      "backdrop_path": "/zOpe0eHsq0A2NvNyBbtT6sj53qV.jpg",
+      "backdrop_path": "/4i3iJepkqqH5JJgTNLJdi8ke6ir.jpg",
       "genre_ids": [
-        28,
-        878,
-        35,
+        10766
+      ],
+      "id": 249010,
+      "origin_country": [
+        "ZA"
+      ],
+      "original_language": "af",
+      "original_name": "Kelders van Geheime",
+      "overview": "Kelders van Geheime (Cellars of Secrets) is a South African, Afrikaans-language telenovela based on the wheeling's and dealings of the community that lives on Soebatskloof (a wine farm in the Cape). The series focuses on three families: the Abrahams, Syster and Marais households. These families will have to stand together, agree (or agree to disagree), and work together to earn their bread and butter – and a glass of wine.",
+      "popularity": 3351.82,
+      "poster_path": "/vf1I0G5jICTstI1EXxb9Oqq80TU.jpg",
+      "first_air_date": "2024-05-06",
+      "name": "Kelders van Geheime",
+      "vote_average": 5.9,
+      "vote_count": 13
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/mLcD1v4sfoa1juOsBat7Vik7wEe.jpg",
+      "genre_ids": [
+        10764
+      ],
+      "id": 248890,
+      "origin_country": [
+        "ZA"
+      ],
+      "original_language": "en",
+      "original_name": "Ready Steady Cook South Africa",
+      "overview": "In Ready Steady Cook, two teams - a Red Tomato and a Green Pepper - compete in a Red Kitchen and a Green Kitchen, together with a South African chef on each side and paired with enthusiastic home cooks, as they are challenged creatively with a mystery bag of ingredients in a 20-minute cook-off.",
+      "popularity": 3322.43,
+      "poster_path": "/30xX4IMbgnMbQwo76xM4BOSokZO.jpg",
+      "first_air_date": "2024-03-18",
+      "name": "Ready Steady Cook South Africa",
+      "vote_average": 4.5,
+      "vote_count": 9
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/2wNuLc0cEoPz6PZItftrZLHjG2k.jpg",
+      "genre_ids": [
+        18,
         10751
       ],
-      "id": 939243,
-      "original_language": "en",
-      "original_title": "Sonic the Hedgehog 3",
-      "overview": "Sonic, Knuckles, and Tails reunite against a powerful new adversary, Shadow, a mysterious villain with powers unlike anything they have faced before. With their abilities outmatched in every way, Team Sonic must seek out an unlikely alliance in hopes of stopping Shadow and protecting the planet.",
-      "popularity": 3125.84,
-      "poster_path": "/mubt4bnVfpJ5lBMq93DidEuMkJr.jpg",
-      "release_date": "2024-12-19",
-      "title": "Sonic the Hedgehog 3",
-      "video": false,
-      "vote_average": 7.685,
-      "vote_count": 243
+      "id": 251691,
+      "origin_country": [
+        "SA"
+      ],
+      "original_language": "ar",
+      "original_name": "خريف القلب",
+      "overview": "A devastating car accident unearths a long-buried secret that turns wealthy businessman Rashid and hardworking Nahla's life around; fifteen years ago, their daughters were switched at birth.",
+      "popularity": 3020.408,
+      "poster_path": "/8uDmIxjBx90y5OCwJDBADtQzxb7.jpg",
+      "first_air_date": "2024-10-27",
+      "name": "Autumn of the Heart",
+      "vote_average": 4.429,
+      "vote_count": 7
     },
     {
       "adult": false,
-      "backdrop_path": "/tElnmtQ6yz1PjN1kePNl8yMSb59.jpg",
+      "backdrop_path": "/cchlQWYrnMPyl1EbjZWCzeAz8l5.jpg",
       "genre_ids": [
-        16,
-        12,
-        10751,
+        18,
         35
       ],
-      "id": 1241982,
-      "original_language": "en",
-      "original_title": "Moana 2",
-      "overview": "After receiving an unexpected call from her wayfinding ancestors, Moana journeys alongside Maui and a new crew to the far seas of Oceania and into dangerous, long-lost waters for an adventure unlike anything she's ever faced.",
-      "popularity": 2488.074,
-      "poster_path": "/m0SbwFNCa9epW1X60deLqTHiP7x.jpg",
-      "release_date": "2024-11-21",
-      "title": "Moana 2",
-      "video": false,
-      "vote_average": 7,
-      "vote_count": 690
-    },
-    {
-      "adult": false,
-      "backdrop_path": "/oHPoF0Gzu8xwK4CtdXDaWdcuZxZ.jpg",
-      "genre_ids": [
-        12,
-        10751,
-        16,
-        10402
+      "id": 36361,
+      "origin_country": [
+        "CZ"
       ],
-      "id": 762509,
-      "original_language": "en",
-      "original_title": "Mufasa: The Lion King",
-      "overview": "Told in flashbacks, Mufasa is an orphaned cub, lost and alone until he meets a sympathetic lion named Taka—the heir to a royal bloodline. The chance meeting sets in motion a journey of misfits searching for their destiny and working together to evade a threatening and deadly foe.",
-      "popularity": 1969.871,
-      "poster_path": "/9bXHaLlsFYpJUutg4E6WXAjaxDi.jpg",
-      "release_date": "2024-12-18",
-      "title": "Mufasa: The Lion King",
-      "video": false,
-      "vote_average": 7.313,
-      "vote_count": 355
+      "original_language": "cs",
+      "original_name": "Ulice",
+      "overview": "Ulice is a Czech soap opera produced and broadcast by Nova. In the Czech language Ulice means street.\n\nThe show describes the lives of the Farský, Jordán, Boháč, Nikl, and Liška families and many other people that live in Prague. Their daily battle against real problems of living in a modern world like divorce, love, betrayal and illness or disease. Ulice often shows crime.",
+      "popularity": 2611.223,
+      "poster_path": "/gFEHva8Csx18hMGJJZ6gi4sFSKR.jpg",
+      "first_air_date": "2005-09-05",
+      "name": "Ulice",
+      "vote_average": 4.6,
+      "vote_count": 30
     },
     {
       "adult": false,
-      "backdrop_path": "/rhc8Mtuo3Kh8CndnlmTNMF8o9pU.jpg",
-      "genre_ids": [
-        28,
-        53
-      ],
-      "id": 1005331,
-      "original_language": "en",
-      "original_title": "Carry-On",
-      "overview": "An airport security officer races to outsmart a mysterious traveler forcing him to let a dangerous item slip onto a Christmas Eve flight.",
-      "popularity": 1515.586,
-      "poster_path": "/sjMN7DRi4sGiledsmllEw5HJjPy.jpg",
-      "release_date": "2024-12-05",
-      "title": "Carry-On",
-      "video": false,
-      "vote_average": 6.995,
-      "vote_count": 1275
-    },
-    {
-      "adult": false,
-      "backdrop_path": "/dWkdmxIkH9y23s9v1PjQFhTGIwo.jpg",
-      "genre_ids": [
-        28,
-        18,
-        53
-      ],
-      "id": 1043905,
-      "original_language": "en",
-      "original_title": "Dirty Angels",
-      "overview": "During the United States' 2021 withdrawal from Afghanistan, a group of female soldiers posing as medical relief are sent back in to rescue a group of kidnapped teenagers caught between ISIS and the Taliban.",
-      "popularity": 1385.471,
-      "poster_path": "/3O3qSGmjRGc10hMwFul8WDxKE5t.jpg",
-      "release_date": "2024-12-11",
-      "title": "Dirty Angels",
-      "video": false,
-      "vote_average": 6.886,
-      "vote_count": 70
-    },
-    {
-      "adult": false,
-      "backdrop_path": "/au3o84ub27qTZiMiEc9UYzN74V3.jpg",
-      "genre_ids": [
-        28,
-        878,
-        53
-      ],
-      "id": 1035048,
-      "original_language": "en",
-      "original_title": "Elevation",
-      "overview": "A single father and two women venture from the safety of their homes to face monstrous creatures to save the life of a young boy.",
-      "popularity": 1225.181,
-      "poster_path": "/sLJqbUymYkLvoNt4E7DG2E4ia6y.jpg",
-      "release_date": "2024-11-07",
-      "title": "Elevation",
-      "video": false,
-      "vote_average": 6.265,
-      "vote_count": 213
-    },
-    {
-      "adult": false,
-      "backdrop_path": "/uVlUu174iiKhsUGqnOSy46eIIMU.jpg",
+      "backdrop_path": "/zk3UqXnnK7cpUv6LsD9DS8FtUxb.jpg",
       "genre_ids": [
         18,
-        10749,
-        14
+        10759
       ],
-      "id": 402431,
-      "original_language": "en",
-      "original_title": "Wicked",
-      "overview": "In the land of Oz, ostracized and misunderstood green-skinned Elphaba is forced to share a room with the popular aristocrat Glinda at Shiz University, and the two's unlikely friendship is tested as they begin to fulfill their respective destinies as Glinda the Good and the Wicked Witch of the West.",
-      "popularity": 1100.249,
-      "poster_path": "/xDGbZ0JJ3mYaGKy4Nzd9Kph6M9L.jpg",
-      "release_date": "2024-11-20",
-      "title": "Wicked",
-      "video": false,
-      "vote_average": 7.4,
-      "vote_count": 791
+      "id": 256121,
+      "origin_country": [
+        "PH"
+      ],
+      "original_language": "tl",
+      "original_name": "Lavender Fields",
+      "overview": "The life of a simple flower farm girl is shattered when she falls for a charming accountant, who turns out to be a married gun cartel member. Targeted for his stolen money, she loses everything she holds dear and reinvents herself to seek justice.",
+      "popularity": 2527.344,
+      "poster_path": "/7o9eY4qolqVn7SDLZzpJ89t7QYE.jpg",
+      "first_air_date": "2024-09-02",
+      "name": "Lavender Fields",
+      "vote_average": 8.2,
+      "vote_count": 5
     },
     {
       "adult": false,
-      "backdrop_path": "/A6vAMO3myroRfBwSZetY4GVqaW4.jpg",
+      "backdrop_path": "/j5CR0gFPjwgmAXkV9HGaF4VMjIW.jpg",
       "genre_ids": [
-        16,
-        14,
-        28,
-        12
+        10766,
+        18,
+        35
       ],
-      "id": 839033,
-      "original_language": "en",
-      "original_title": "The Lord of the Rings: The War of the Rohirrim",
-      "overview": "183 years before the events chronicled in the original trilogy, a sudden attack by Wulf, a clever and ruthless Dunlending lord seeking vengeance for the death of his father, forces Helm Hammerhand and his people to make a daring last stand in the ancient stronghold of the Hornburg. Finding herself in an increasingly desperate situation, Héra, the daughter of Helm, must summon the will to lead the resistance against a deadly enemy intent on their total destruction.",
-      "popularity": 1056.755,
-      "poster_path": "/hE9SAMyMSUGAPsHUGdyl6irv11v.jpg",
-      "release_date": "2024-12-05",
-      "title": "The Lord of the Rings: The War of the Rohirrim",
-      "video": false,
-      "vote_average": 6.833,
-      "vote_count": 159
+      "id": 257064,
+      "origin_country": [
+        "BR"
+      ],
+      "original_language": "pt",
+      "original_name": "Volta por Cima",
+      "overview": "",
+      "popularity": 2477.511,
+      "poster_path": "/nyN8R0P1Hqwq7ksJz4O2BIAUd4W.jpg",
+      "first_air_date": "2024-09-30",
+      "name": "Volta por Cima",
+      "vote_average": 6.4,
+      "vote_count": 9
     },
     {
       "adult": false,
-      "backdrop_path": "/A28EE0vgHrB0OdoxWWMfgfyEoYn.jpg",
+      "backdrop_path": "/tPLUHT2cQYJi66aSZZ1qrcu74Zq.jpg",
       "genre_ids": [
-        80,
-        53,
-        28
-      ],
-      "id": 1276945,
-      "original_language": "nl",
-      "original_title": "Ferry 2",
-      "overview": "After losing his drug empire, Ferry Bouman has found a measure of peace away from Brabant's criminal underworld — until his past catches up to him.",
-      "popularity": 1051.579,
-      "poster_path": "/8pwdnL3pEISIN1EGmwZzU6hpNVk.jpg",
-      "release_date": "2024-12-19",
-      "title": "Ferry 2",
-      "video": false,
-      "vote_average": 5.7,
-      "vote_count": 58
-    },
-    {
-      "adult": false,
-      "backdrop_path": "/bFPqSvR2EmWQ9AlzWkC801XpoAZ.jpg",
-      "genre_ids": [
-        27,
-        878
-      ],
-      "id": 933260,
-      "original_language": "en",
-      "original_title": "The Substance",
-      "overview": "A fading celebrity decides to use a black market drug, a cell-replicating substance that temporarily creates a younger, better version of herself.",
-      "popularity": 1035.432,
-      "poster_path": "/lqoMzCcZYEFK729d6qzt349fB4o.jpg",
-      "release_date": "2024-09-07",
-      "title": "The Substance",
-      "video": false,
-      "vote_average": 7.2,
-      "vote_count": 2886
-    },
-    {
-      "adult": false,
-      "backdrop_path": "/6lE2e6j8qbtQR8aHxQNJlwxdmKV.jpg",
-      "genre_ids": [
-        28,
-        80,
-        53
-      ],
-      "id": 974453,
-      "original_language": "en",
-      "original_title": "Absolution",
-      "overview": "An aging ex-boxer gangster working as muscle for a Boston crime boss receives an upsetting diagnosis.  Despite a faltering memory, he attempts to rectify the sins of his past and reconnect with his estranged children. He is determined to leave a positive legacy for his grandson, but the criminal underworld isn’t done with him and won’t loosen their grip willingly.",
-      "popularity": 952.272,
-      "poster_path": "/2MeQG5Vq8rUnRAa463BZe5GNhVk.jpg",
-      "release_date": "2024-10-31",
-      "title": "Absolution",
-      "video": false,
-      "vote_average": 5.964,
-      "vote_count": 196
-    },
-    {
-      "adult": false,
-      "backdrop_path": "/xlkclSE4aq7r3JsFIJRgs21zUew.jpg",
-      "genre_ids": [
-        27,
-        53
-      ],
-      "id": 1034541,
-      "original_language": "en",
-      "original_title": "Terrifier 3",
-      "overview": "Five years after surviving Art the Clown's Halloween massacre, Sienna and Jonathan are still struggling to rebuild their shattered lives. As the holiday season approaches, they try to embrace the Christmas spirit and leave the horrors of the past behind. But just when they think they're safe, Art returns, determined to turn their holiday cheer into a new nightmare. The festive season quickly unravels as Art unleashes his twisted brand of terror, proving that no holiday is safe.",
-      "popularity": 691.532,
-      "poster_path": "/ju10W5gl3PPK3b7TjEmVOZap51I.jpg",
-      "release_date": "2024-10-09",
-      "title": "Terrifier 3",
-      "video": false,
-      "vote_average": 6.9,
-      "vote_count": 1327
-    },
-    {
-      "adult": false,
-      "backdrop_path": "/2gAStVyyv9C3BSEKhP0a1aM3Qy9.jpg",
-      "genre_ids": [
-        27,
-        14
-      ],
-      "id": 426063,
-      "original_language": "en",
-      "original_title": "Nosferatu",
-      "overview": "A gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her, causing untold horror in its wake.",
-      "popularity": 664.102,
-      "poster_path": "/5qGIxdEO841C0tdY8vOdLoRVrr0.jpg",
-      "release_date": "2024-12-25",
-      "title": "Nosferatu",
-      "video": false,
-      "vote_average": 6.5,
-      "vote_count": 166
-    },
-    {
-      "adult": false,
-      "backdrop_path": "/v9Du2HC3hlknAvGlWhquRbeifwW.jpg",
-      "genre_ids": [
-        28,
-        12,
-        53
-      ],
-      "id": 539972,
-      "original_language": "en",
-      "original_title": "Kraven the Hunter",
-      "overview": "Kraven Kravinoff's complex relationship with his ruthless gangster father, Nikolai, starts him down a path of vengeance with brutal consequences, motivating him to become not only the greatest hunter in the world, but also one of its most feared.",
-      "popularity": 637.022,
-      "poster_path": "/i47IUSsN126K11JUzqQIOi1Mg1M.jpg",
-      "release_date": "2024-12-11",
-      "title": "Kraven the Hunter",
-      "video": false,
-      "vote_average": 5.927,
-      "vote_count": 247
-    },
-    {
-      "adult": false,
-      "backdrop_path": "/4cp40IyTpFfsT2IKpl0YlUkMBIR.jpg",
-      "genre_ids": [
-        10749,
-        35,
+        10766,
         18
       ],
-      "id": 1064213,
-      "original_language": "en",
-      "original_title": "Anora",
-      "overview": "A young sex worker from Brooklyn gets her chance at a Cinderella story when she meets and impulsively marries the son of an oligarch. Once the news reaches Russia, her fairytale is threatened as his parents set out to get the marriage annulled.",
-      "popularity": 600.995,
-      "poster_path": "/7MrgIUeq0DD2iF7GR6wqJfYZNeC.jpg",
-      "release_date": "2024-10-14",
-      "title": "Anora",
-      "video": false,
-      "vote_average": 6.9,
-      "vote_count": 596
+      "id": 257048,
+      "origin_country": [
+        "BR"
+      ],
+      "original_language": "pt",
+      "original_name": "Garota do Momento",
+      "overview": "",
+      "popularity": 2466.805,
+      "poster_path": "/jFSkjQSZ5Td52igalpoTQRuHtk.jpg",
+      "first_air_date": "2024-11-04",
+      "name": "Garota do Momento",
+      "vote_average": 7.9,
+      "vote_count": 8
     },
     {
       "adult": false,
-      "backdrop_path": "/evFChfYeD2LqobEJf8iQsrYcGTw.jpg",
+      "backdrop_path": "/4uWvmON2pqDJtpPAsHMggdDFFrn.jpg",
       "genre_ids": [
-        28,
         80,
-        53
+        18
       ],
-      "id": 1182387,
+      "id": 549,
+      "origin_country": [
+        "US"
+      ],
       "original_language": "en",
-      "original_title": "Armor",
-      "overview": "Armored truck security guard James Brody is working with his son Casey transporting millions of dollars between banks when a team of thieves led by Rook orchestrate a takeover of their truck to seize the riches. Following a violent car chase, Rook soon has the armored truck surrounded and James and Casey find themselves cornered onto a decrepit bridge.",
-      "popularity": 560.092,
-      "poster_path": "/pnXLFioDeftqjlCVlRmXvIdMsdP.jpg",
-      "release_date": "2024-10-30",
-      "title": "Armor",
-      "video": false,
-      "vote_average": 5.537,
+      "original_name": "Law & Order",
+      "overview": "In cases ripped from the headlines, police investigate serious and often deadly crimes, weighing the evidence and questioning the suspects until someone is taken into custody. The district attorney's office then builds a case to convict the perpetrator by proving the person guilty beyond a reasonable doubt. Working together, these expert teams navigate all sides of the complex criminal justice system to make New York a safer place.",
+      "popularity": 2423.893,
+      "poster_path": "/6vFL8S6Cci8s7SHWXz60xOisGBC.jpg",
+      "first_air_date": "1990-09-13",
+      "name": "Law & Order",
+      "vote_average": 7.4,
+      "vote_count": 582
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/i8iqYtAy9qcO5RSrA1f6fY1n6SN.jpg",
+      "genre_ids": [
+        10766
+      ],
+      "id": 235484,
+      "origin_country": [
+        "ZA"
+      ],
+      "original_language": "af",
+      "original_name": "Suidooster",
+      "overview": "Suidooster is a South African television soap opera produced by Suidooster Films which revolves around a matriarch, her family, friends and the people of Suidooster, a small shopping and business centre in the fictional Cape Town suburb of Ruiterbosch.",
+      "popularity": 2319.123,
+      "poster_path": "/naCgSiacvV685kait6fBvhVhdce.jpg",
+      "first_air_date": "2015-11-16",
+      "name": "Suidooster",
+      "vote_average": 7.7,
+      "vote_count": 20
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/9zIqN0oMmaeFvBlccgw80sWed7I.jpg",
+      "genre_ids": [
+        10763,
+        35
+      ],
+      "id": 13008,
+      "origin_country": [
+        "US"
+      ],
+      "original_language": "en",
+      "original_name": "TMZ",
+      "overview": "Based on the popular gossip website, this entertainment newsmagazine delivers daily updates on Hollywood's rich, beautiful and screwed-up. The program often shows highlights of the day's staff meeting during which reporters pitch ideas for stories to air that day.",
+      "popularity": 2234.99,
+      "poster_path": "/ifFpUG51DJaQxwnZ35VwoGRFGGv.jpg",
+      "first_air_date": "2007-09-10",
+      "name": "TMZ",
+      "vote_average": 4.813,
+      "vote_count": 16
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/kkfqNkGQR5og5sDjJTxTVmI9PW.jpg",
+      "genre_ids": [
+        80,
+        18
+      ],
+      "id": 72879,
+      "origin_country": [
+        "FR"
+      ],
+      "original_language": "fr",
+      "original_name": "Demain nous appartient",
+      "overview": "The story revolves around the people of Sète, France. Their lives are punctuated by family rivalries, romance and scenes from daily life, but also by plots involving police investigations, secrets and betrayals.",
+      "popularity": 2213.046,
+      "poster_path": "/zMWldNZF0wS3L5XkDVFHxYhclcL.jpg",
+      "first_air_date": "2017-07-17",
+      "name": "Tomorrow Is Ours",
+      "vote_average": 6.3,
+      "vote_count": 64
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/5w5Cn8c4PNmDA5o9rET2oc0nxwb.jpg",
+      "genre_ids": [
+        18
+      ],
+      "id": 260695,
+      "origin_country": [
+        "EG"
+      ],
+      "original_language": "ar",
+      "original_name": "وتر حساس",
+      "overview": "In a social dramatic context, the events of the series revolve around the issue of marital infidelity and the secrets of the human soul through three women (a doctor, a lawyer, and an employee in one of the departments), where the pace of events escalates due to the disputes between the lawyer and her husband, an interior designer, especially after she accused him of betrayal, with the intertwined relationships between all parties.",
+      "popularity": 2205.576,
+      "poster_path": "/hHoBvznjHhGqPKNkRnqb9zUq8s6.jpg",
+      "first_air_date": "2024-10-27",
+      "name": "sensitive chord",
+      "vote_average": 5.5,
+      "vote_count": 2
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/s41aHDgGza66JSwEc0poXSuBrmx.jpg",
+      "genre_ids": [
+        18
+      ],
+      "id": 261121,
+      "origin_country": [
+        "KR"
+      ],
+      "original_language": "ko",
+      "original_name": "친절한 선주씨",
+      "overview": "Pi Seon Ju works as an interior designer in a small neighborhood. She is married to Jeon Nam Jin, who is an ambitious architect. Although Pi Seon Ju is devoted to her husband, her husband falls in love with Jin Sang A, who will become the successor of an architecture company. To further pursue his love and ambitions, Jeon Nam Jin demands a divorce from Pi Seon Ju. After their divorce, Pi Seon Ju decides to start her new life.\n\nMeanwhile, architect Kim So U is married to Jin Sang A. Unlike Jin Sang A, he is satisfied with a stable situation rather than being fueled with ambition. Due to his wife's affair with Jeon Nam Jin, Kim So U gets divorced. After meeting Pi Seon Ju, Kim So U experiences a turning point in his life.",
+      "popularity": 2179.102,
+      "poster_path": "/wALnisqW9vGGJWH1GYUeCCWTcYd.jpg",
+      "first_air_date": "2024-11-18",
+      "name": "Desperate Mrs. Seonju",
+      "vote_average": 6.3,
+      "vote_count": 3
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/2Bkqjc9tNWo3KLr1aRYyJ7vMQtM.jpg",
+      "genre_ids": [
+        10764
+      ],
+      "id": 235493,
+      "origin_country": [
+        "NL"
+      ],
+      "original_language": "nl",
+      "original_name": "De Bondgenoten",
+      "overview": "",
+      "popularity": 2162.016,
+      "poster_path": "/sFgeZT3H1Uz3X1OipPq3WONv0WO.jpg",
+      "first_air_date": "2023-10-22",
+      "name": "De Bondgenoten",
+      "vote_average": 6.8,
+      "vote_count": 20
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/5APjn4LnV5wWk5DXq7ZewT6zzP1.jpg",
+      "genre_ids": [
+        10766
+      ],
+      "id": 291,
+      "origin_country": [
+        "MY",
+        "GB"
+      ],
+      "original_language": "en",
+      "original_name": "Coronation Street",
+      "overview": "The residents of Coronation Street are ordinary, working-class people, and the show follows them through regular social and family interactions at home, in the workplace, and in their local pub, the Rovers Return Inn. Britain's longest-running soap.",
+      "popularity": 2135.406,
+      "poster_path": "/5x1HXqYqPyYw7oc7Isu1lvVmwRP.jpg",
+      "first_air_date": "1960-12-09",
+      "name": "Coronation Street",
+      "vote_average": 5.3,
       "vote_count": 108
     },
     {
       "adult": false,
-      "backdrop_path": "/ag66gJCiZ06q1GSJuQlhGLi3Udx.jpg",
+      "backdrop_path": "/6wAu4kZiKov5WkavL7H2ZfwbGAo.jpg",
       "genre_ids": [
-        27,
-        53
+        10766,
+        18,
+        9648
       ],
-      "id": 1138194,
-      "original_language": "en",
-      "original_title": "Heretic",
-      "overview": "Two young missionaries are forced to prove their faith when they knock on the wrong door and are greeted by a diabolical Mr. Reed, becoming ensnared in his deadly game of cat-and-mouse.",
-      "popularity": 558.855,
-      "poster_path": "/5HJqjCTcaE1TFwnNh3Dn21be2es.jpg",
-      "release_date": "2024-10-31",
-      "title": "Heretic",
-      "video": false,
-      "vote_average": 7.138,
-      "vote_count": 644
+      "id": 237478,
+      "origin_country": [
+        "BR"
+      ],
+      "original_language": "pt",
+      "original_name": "Mania de Você",
+      "overview": "The story begins with the ambiguous relationship between friends Viola and Luma, who seem predestined to literally enter each other's lives. Born on the same day, in very different situations, they meet years later, united by coincidences that go beyond their birthday. From humble origins, Viola moves with her boyfriend Mavi to Angra dos Reis, where Luma lives a luxurious life and dates Rudá, who ends up meeting Viola by chance. Thus begins the duo's journey, which goes from a passion for recipes to an obsession with the same man, from the immediate connection to the point of starting to live their friend’s reality, 10 years later. A journey divided between complicity and rivalry, which includes them in a love quadrangle and is impacted by a series of circumstances, twists and surprises, such as the secret surrounding a murder.",
+      "popularity": 2097.681,
+      "poster_path": "/cRMofv8YC4F1WnpF7cIqMpwSnwh.jpg",
+      "first_air_date": "2024-09-09",
+      "name": "Crazy About You",
+      "vote_average": 5.4,
+      "vote_count": 8
+    },
+    {
+      "adult": false,
+      "backdrop_path": "/dg2pu4Vm4B2cOqTHlZ26Lka9qEz.jpg",
+      "genre_ids": [
+        10766,
+        18
+      ],
+      "id": 262969,
+      "origin_country": [
+        "ES"
+      ],
+      "original_language": "es",
+      "original_name": "Regreso a Las Sabinas",
+      "overview": "Gracia and Paloma return to Las Sabinas to look after their father, Emilio. Gracia reunites with her childhood sweetheart, Miguel, who is now engaged to Esther. Paloma takes over the family's land and clashes with landowner Paca Utrera, who shares a terrible secret with Emilio and has a nefarious plan for the village. Young Óscar is found dead under strange circumstances. Manuela must investigate the murder with the help of Óscar's brother, Álex, who is a priest.",
+      "popularity": 2092.241,
+      "poster_path": "/xMMH3r8gJtWVe1841BtHGjDooUm.jpg",
+      "first_air_date": "2024-10-11",
+      "name": "Return to Las Sabinas",
+      "vote_average": 6.2,
+      "vote_count": 5
     }
   ],
-  "total_pages": 214,
-  "total_results": 4270
+  "total_pages": 9440,
+  "total_results": 188781
 }
